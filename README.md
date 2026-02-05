@@ -47,14 +47,19 @@ Deployment: Netlify (Static Hosting + CDN)
 Data: Mock API / Static JSON
 ```
 
-# Quick Start
+## Quick Start
 
-# 1. Clone or download the project files
+Follow these steps to run the project locally:
 
-git clone <repository-url>
-cd e-commerce-dashboard
+### 1. Clone the repository
 
-# 2. Install dependencies
+```bash
+git clone https://github.com/mahmoud8192/E-commerce-Dashboard
+cd E-commerce-Dashboard
+
+```
+
+### 2- Install dependencies
 
 npm install
 
@@ -62,10 +67,10 @@ npm install
 
 yarn install
 
-# 3. Run development server
+### 2- Start development server
 
-npm start
+npm run build
 
 # or
 
-yarn start
+yarn build
