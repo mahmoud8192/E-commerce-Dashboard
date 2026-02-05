@@ -1,0 +1,8 @@
+Adding New Features
+Create new page in src/pages/
+
+Add route in src/App.jsx
+
+Update sidebar in src/components/layout/Sidebar.jsx
+
+Create service in src/services/ if needed

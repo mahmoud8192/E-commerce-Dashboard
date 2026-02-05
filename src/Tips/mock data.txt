@@ -1,0 +1,14 @@
+📊 Mock Data
+All mock data is located in src/data/ directory:
+
+mockUsers.js - User accounts
+
+mockDashboard.js - Dashboard stats and analytics
+
+mockOrders.js - Order records
+
+mockProducts.js - Product catalog
+
+mockCustomers.js - Customer data
+
+You can modify these files to test different scenarios.
