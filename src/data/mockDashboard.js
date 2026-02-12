@@ -33,21 +33,8 @@ export const mockDashboardStats = [
   }
 ];
 
-export const mockRecentOrders = Array.from({ length: 10000 }, (_, i) => {
-  return {
-    id: i,
-    orderNumber: "ORD-2026-001",
-    customer: "Ahmad Samer",
-    date: "2026-02-02",
-    total: 249.99,
-    status: "delivered",
-    items: 3
-  };
-});
-
-/**
- * 
- *   {
+export const mockRecentOrders = [
+  {
     id: "ord_001",
     orderNumber: "ORD-2026-001",
     customer: "Ahmad Samer",
@@ -92,9 +79,7 @@ export const mockRecentOrders = Array.from({ length: 10000 }, (_, i) => {
     status: "delivered",
     items: 4
   }
-
- * 
- */
+];
 export const mockTopProducts = [
   {
     id: "prod_1",
