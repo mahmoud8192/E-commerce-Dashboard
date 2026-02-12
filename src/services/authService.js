@@ -3,7 +3,7 @@ import { mockUsers } from "../data/mockUsers";
 
 // Mock mode - set to false when you have a real backend
 const MOCK_MODE = true;
-
+const MOCK_PASSWORD = "admin@111";
 export const authService = {
   /**
    * Login user
@@ -19,7 +19,7 @@ export const authService = {
       // Mock authentication
       const user = mockUsers.find((u) => u.email === email);
 
-      if (!user || password !== "admin123") {
+      if (!user || password !== MOCK_PASSWORD) {
         return {
           success: false,
           message: "Invalid email or password"

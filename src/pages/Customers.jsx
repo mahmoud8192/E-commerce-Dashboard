@@ -10,21 +10,115 @@ import { useFilter } from "../hooks/useFilter";
 import { usePagination } from "../hooks/usePagination";
 import { useDebounce } from "../hooks/useDebounce";
 import { formatCurrency } from "../utils/formatters";
-import { format } from "date-fns";
+import { formatDate } from "../utils/formatters";
 import { Users, Mail, Phone, MapPin } from "lucide-react";
+import Table from "../components/Tables/Table";
 
 /**
  * Customers Page Component
  */
+
+const columns = [
+  { Header: "Customer", accessor: "customer" },
+  { Header: "Contact", accessor: "contact" },
+  { Header: "Location", accessor: "location" },
+  { Header: "Orders", accessor: "totalOrders" },
+  { Header: "Total Spent", accessor: "total" },
+  { Header: "Status", accessor: "status" },
+  { Header: "Joined", accessor: "date" }
+];
+
+const getStatusVariant = (status) => {
+  const variants = {
+    active: "success",
+    inactive: "default",
+    vip: "warning"
+  };
+  return variants[status] || "default";
+};
+
+const renderRow = (row, col) => {
+  switch (col.accessor) {
+    case "date": {
+      return (
+        <span className="text-sm text-gray-500">
+          {formatDate(new Date(row.joinedDate), "MMM dd, yyyy")}
+        </span>
+      );
+    }
+    case "total": {
+      return (
+        <span className="text-sm font-medium text-gray-900">
+          {formatCurrency(row.totalSpent)}
+        </span>
+      );
+    }
+    case "status": {
+      return <Badge variant={getStatusVariant(row.status)}>{row.status}</Badge>;
+    }
+    case "location": {
+      return (
+        <td className="px-6 py-4 whitespace-nowrap">
+          <div className="flex items-center gap-2 text-sm text-gray-600">
+            <MapPin size={14} />
+            {row.location}
+          </div>
+        </td>
+      );
+    }
+
+    case "contact": {
+      return (
+        <td className="px-6 py-4">
+          <div className="space-y-1">
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Mail size={14} />
+              {row.email}
+            </div>
+            <div className="flex items-center gap-2 text-sm text-gray-600">
+              <Phone size={14} />
+              {row.phone}
+            </div>
+          </div>
+        </td>
+      );
+    }
+    case "customer": {
+      return (
+        <td className="px-6 py-4 whitespace-nowrap">
+          <div className="flex items-center">
+            <img
+              src={row.avatar}
+              alt={row.name}
+              className="w-10 h-10 rounded-full"
+            />
+            <div className="ml-4">
+              <p className="text-sm font-medium text-gray-900">{row.name}</p>
+              <p className="text-xs text-gray-500">ID: {row.id}</p>
+            </div>
+          </div>
+        </td>
+      );
+    }
+
+    default: {
+      return <span className="text-sm text-gray-900">{row[col.accessor]}</span>;
+    }
+  }
+};
+
 const Customers = () => {
-  const { customers, customersLoading, fetchCustomers } = useDashboard();
+  const { customers, loading, fetchCustomers } = useDashboard();
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   // Filter and pagination
-  const { filteredData, updateFilter, resetFilters } = useFilter(customers, {
-    search: ""
-  });
+  const { filteredData, updateFilter, filterMode, resetFilters } = useFilter(
+    customers,
+    {
+      search: ""
+    }
+  );
 
   const {
     currentData,
@@ -43,16 +137,7 @@ const Customers = () => {
     updateFilter("search", debouncedSearch);
   }, [debouncedSearch]);
 
-  const getStatusVariant = (status) => {
-    const variants = {
-      active: "success",
-      inactive: "default",
-      vip: "warning"
-    };
-    return variants[status] || "default";
-  };
-
-  if (customersLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <Spinner size="lg" />
@@ -149,102 +234,11 @@ const Customers = () => {
           />
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Contact
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Location
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Orders
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total Spent
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Joined
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {currentData.map((customer) => (
-                    <tr
-                      key={customer.id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center">
-                          <img
-                            src={customer.avatar}
-                            alt={customer.name}
-                            className="w-10 h-10 rounded-full"
-                          />
-                          <div className="ml-4">
-                            <p className="text-sm font-medium text-gray-900">
-                              {customer.name}
-                            </p>
-                            <p className="text-xs text-gray-500">
-                              ID: {customer.id}
-                            </p>
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4">
-                        <div className="space-y-1">
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Mail size={14} />
-                            {customer.email}
-                          </div>
-                          <div className="flex items-center gap-2 text-sm text-gray-600">
-                            <Phone size={14} />
-                            {customer.phone}
-                          </div>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div className="flex items-center gap-2 text-sm text-gray-600">
-                          <MapPin size={14} />
-                          {customer.location}
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
-                          {customer.totalOrders}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-semibold text-gray-900">
-                          {formatCurrency(customer.totalSpent)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge variant={getStatusVariant(customer.status)}>
-                          {customer.status}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">
-                          {format(
-                            new Date(customer.joinedDate),
-                            "MMM dd, yyyy"
-                          )}
-                        </span>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
+            <Table
+              columns={columns}
+              data={filterMode ? filteredData : customers}
+              renderRow={renderRow}
+            />
 
             {/* Pagination */}
             <Pagination

@@ -1,4 +1,4 @@
-import { useState, useMemo } from 'react';
+import { useState, useMemo } from "react";
 
 /**
  * Custom hook for pagination logic
@@ -8,7 +8,6 @@ import { useState, useMemo } from 'react';
  */
 export const usePagination = (data, itemsPerPage = 10) => {
   const [currentPage, setCurrentPage] = useState(1);
-
   const totalPages = Math.ceil(data.length / itemsPerPage);
 
   const currentData = useMemo(() => {
@@ -38,6 +37,6 @@ export const usePagination = (data, itemsPerPage = 10) => {
     nextPage,
     previousPage,
     hasNextPage: currentPage < totalPages,
-    hasPreviousPage: currentPage > 1,
+    hasPreviousPage: currentPage > 1
   };
 };

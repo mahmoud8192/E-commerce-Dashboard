@@ -14,31 +14,85 @@ import {
   Eye
 } from "lucide-react";
 import { formatCurrency, formatNumber } from "../utils/formatters";
-
+import { mockAnalytics } from "../data/mockAnalytics";
+import Table from "../components/Tables/Table";
 /**
  * Analytics Page Component
  */
+const renderRow = (row, col) => {
+  const key = col.accessor;
+  const value = row[col.accessor];
+  switch (key) {
+    case "previous":
+    case "current": {
+      return (
+        <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
+          {formatCurrency(value)}
+        </td>
+      );
+    }
+    case "change": {
+      return (
+        <td className="px-6 py-4 whitespace-nowrap">
+          <div className="flex items-center gap-1">
+            {value > 0 ? (
+              <TrendingUp size={14} className="text-green-500" />
+            ) : (
+              <TrendingDown size={14} className="text-red-500" />
+            )}
+            <span
+              className={`text-sm ${value > 0 ? "text-green-600" : "text-red-600"} font-medium`}
+            >
+              {Math.abs(value)}%
+            </span>
+          </div>
+        </td>
+      );
+    }
+    default: {
+      return (
+        <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
+          {value}
+        </td>
+      );
+    }
+  }
+};
+const coulmns = [
+  {
+    Header: "Metric",
+    accessor: "name"
+  },
+  {
+    Header: "Current",
+    accessor: "current"
+  },
+  {
+    Header: "Previous",
+    accessor: "previous"
+  },
+  {
+    Header: "Change",
+    accessor: "change"
+  }
+];
+const timeRangeOptions = [
+  { value: "7d", label: "Last 7 Days" },
+  { value: "30d", label: "Last 30 Days" },
+  { value: "90d", label: "Last 90 Days" },
+  { value: "1y", label: "Last Year" }
+];
+
 const Analytics = () => {
-  const { analyticsData, fetchAnalytics } = useDashboard();
+  const { analyticsData, loading, fetchAnalytics } = useDashboard();
   const [timeRange, setTimeRange] = useState("7d");
-  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
+    const loadAnalytics = async (range) => {
+      await fetchAnalytics(range);
+    };
     loadAnalytics(timeRange);
-  }, [timeRange]);
-
-  const loadAnalytics = async (range) => {
-    setLoading(true);
-    await fetchAnalytics(range);
-    setLoading(false);
-  };
-
-  const timeRangeOptions = [
-    { value: "7d", label: "Last 7 Days" },
-    { value: "30d", label: "Last 30 Days" },
-    { value: "90d", label: "Last 90 Days" },
-    { value: "1y", label: "Last Year" }
-  ];
+  }, [fetchAnalytics, timeRange]);
 
   // Calculate totals from analytics data
   const totalRevenue =
@@ -200,106 +254,13 @@ const Analytics = () => {
       </div>
 
       {/* Top Metrics Table */}
-      <Card title="Performance Metrics">
-        <div className="overflow-x-auto">
-          <table className="w-full">
-            <thead className="bg-gray-50 border-b border-gray-200">
-              <tr>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Metric
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Current
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Previous
-                </th>
-                <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                  Change
-                </th>
-              </tr>
-            </thead>
-            <tbody className="bg-white divide-y divide-gray-200">
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Average Order Value
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatCurrency(totalRevenue / (totalOrders || 1))}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {formatCurrency(85.5)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1">
-                    <TrendingUp size={14} className="text-green-500" />
-                    <span className="text-sm text-green-600 font-medium">
-                      7.3%
-                    </span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Customer Lifetime Value
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  {formatCurrency(1547.8)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  {formatCurrency(1432.5)}
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1">
-                    <TrendingUp size={14} className="text-green-500" />
-                    <span className="text-sm text-green-600 font-medium">
-                      8.1%
-                    </span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Cart Abandonment Rate
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  68.4%
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  72.1%
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1">
-                    <TrendingDown size={14} className="text-green-500" />
-                    <span className="text-sm text-green-600 font-medium">
-                      5.1%
-                    </span>
-                  </div>
-                </td>
-              </tr>
-              <tr>
-                <td className="px-6 py-4 whitespace-nowrap text-sm font-medium text-gray-900">
-                  Return Customer Rate
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-900">
-                  35.7%
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                  32.4%
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <div className="flex items-center gap-1">
-                    <TrendingUp size={14} className="text-green-500" />
-                    <span className="text-sm text-green-600 font-medium">
-                      10.2%
-                    </span>
-                  </div>
-                </td>
-              </tr>
-            </tbody>
-          </table>
-        </div>
-      </Card>
+      <div className="bg-white">
+        <Table
+          columns={coulmns}
+          data={mockAnalytics.metrics}
+          renderRow={renderRow}
+        />
+      </div>
     </div>
   );
 };

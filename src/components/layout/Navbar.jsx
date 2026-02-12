@@ -72,7 +72,7 @@ const Navbar = ({ onMenuClick }) => {
 
             {/* Notifications Dropdown */}
             {showNotifications && (
-              <div className="absolute right-0 mt-2 w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
+              <div className="absolute right-0 mt-2 w-[50vw] sm:w-80 bg-white rounded-lg shadow-lg border border-gray-200 py-2">
                 <div className="px-4 py-2 border-b border-gray-200">
                   <h3 className="text-sm font-semibold text-gray-900">
                     Notifications

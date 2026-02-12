@@ -8,8 +8,9 @@ import { useState, useMemo } from "react";
  */
 export const useFilter = (data, initialFilters = {}) => {
   const [filters, setFilters] = useState(initialFilters);
-
+  const [filterMode, setFilterMode] = useState(false);
   const filteredData = useMemo(() => {
+    setFilterMode(true);
     return data.filter((item) => {
       return Object.entries(filters).every(([key, value]) => {
         // Skip empty filters
@@ -37,6 +38,7 @@ export const useFilter = (data, initialFilters = {}) => {
 
   const resetFilters = () => {
     setFilters(initialFilters);
+    setFilterMode(false);
   };
 
   return {
@@ -44,6 +46,7 @@ export const useFilter = (data, initialFilters = {}) => {
     filters,
     updateFilter,
     setFilters,
-    resetFilters
+    resetFilters,
+    filterMode
   };
 };

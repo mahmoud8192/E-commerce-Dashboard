@@ -12,29 +12,28 @@ import EmptyState from "../components/common/EmptyState";
 import { useFilter } from "../hooks/useFilter";
 import { usePagination } from "../hooks/usePagination";
 import { useDebounce } from "../hooks/useDebounce";
-import { formatCurrency } from "../utils/formatters";
+import { formatCurrency, formatDate } from "../utils/formatters";
 import { format } from "date-fns";
 import { Eye, Filter, Download, ShoppingBag } from "lucide-react";
+import Table from "../components/Tables/Table";
+import useOrders from "../hooks/useOrders";
 
 /**
  * Orders Page Component
  */
 const Orders = () => {
-  const { orders, ordersLoading, fetchOrders, updateOrderStatus } =
-    useDashboard();
+  const { orders, loading, fetchOrders, updateOrderStatus } = useDashboard();
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [showDetailsModal, setShowDetailsModal] = useState(false);
   const [searchTerm, setSearchTerm] = useState("");
   const debouncedSearch = useDebounce(searchTerm, 300);
 
   // Filter and pagination
-  const { filteredData, filters, updateFilter, resetFilters } = useFilter(
-    orders,
-    {
+  const { filteredData, filters, updateFilter, resetFilters, filterMode } =
+    useFilter(orders, {
       status: "all",
       search: ""
-    }
-  );
+    });
 
   const {
     currentData,
@@ -65,6 +64,34 @@ const Orders = () => {
     { value: "delivered", label: "Delivered" },
     { value: "cancelled", label: "Cancelled" }
   ];
+  const renderRow = (row, col) => {
+    switch (col.accessor) {
+      case "date": {
+        return (
+          <span className="text-sm text-gray-500">
+            {formatDate(new Date(row.date), "MMM dd, yyyy")}
+          </span>
+        );
+      }
+      case "total": {
+        return (
+          <span className="text-sm font-medium text-gray-900">
+            {formatCurrency(row.total)}
+          </span>
+        );
+      }
+      case "status": {
+        return (
+          <Badge variant={getStatusVariant(row.status)}>{row.status}</Badge>
+        );
+      }
+      default: {
+        return (
+          <span className="text-sm text-gray-900">{row[col.accessor]}</span>
+        );
+      }
+    }
+  };
 
   const getStatusVariant = (status) => {
     const variants = {
@@ -112,14 +139,22 @@ const Orders = () => {
     a.click();
   };
 
-  if (ordersLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <Spinner size="lg" />
       </div>
     );
   }
-
+  const coulmns = [
+    { Header: "Order", accessor: "id" },
+    { Header: "Number", accessor: "orderNumber" },
+    { Header: "Customer", accessor: "customer" },
+    { Header: "Email", accessor: "email" },
+    { Header: "Status", accessor: "status" },
+    { Header: "Items", accessor: "items" },
+    { Header: "Date", accessor: "date" }
+  ];
   return (
     <div className="space-y-6 animate-fade-in">
       {/* Page Header */}
@@ -199,88 +234,19 @@ const Orders = () => {
           />
         ) : (
           <>
-            <div className="overflow-x-auto">
-              <table className="w-full">
-                <thead className="bg-gray-50 border-b border-gray-200">
-                  <tr>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Order
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Customer
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Date
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Items
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Total
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Status
-                    </th>
-                    <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                      Actions
-                    </th>
-                  </tr>
-                </thead>
-                <tbody className="bg-white divide-y divide-gray-200">
-                  {currentData.map((order) => (
-                    <tr
-                      key={order.id}
-                      className="hover:bg-gray-50 transition-colors"
-                    >
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-medium text-gray-900">
-                          {order.orderNumber}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <div>
-                          <p className="text-sm font-medium text-gray-900">
-                            {order.customer}
-                          </p>
-                          <p className="text-xs text-gray-500">{order.email}</p>
-                        </div>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-600">
-                          {format(new Date(order.date), "MMM dd, yyyy")}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm text-gray-900">
-                          {order.items}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <span className="text-sm font-semibold text-gray-900">
-                          {formatCurrency(order.total)}
-                        </span>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Badge variant={getStatusVariant(order.status)}>
-                          {order.status}
-                        </Badge>
-                      </td>
-                      <td className="px-6 py-4 whitespace-nowrap">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          icon={<Eye size={16} />}
-                          onClick={() => handleViewDetails(order)}
-                        >
-                          View
-                        </Button>
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-
+            <Table
+              renderRow={renderRow}
+              columns={coulmns}
+              data={filterMode ? filteredData : orders}
+              actionList={[
+                {
+                  name: "View",
+                  onclick: (row) => {
+                    handleViewDetails(row);
+                  }
+                }
+              ]}
+            />
             {/* Pagination */}
             <Pagination
               currentPage={currentPage}

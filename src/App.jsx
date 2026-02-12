@@ -23,9 +23,12 @@ import Customers from "./pages/Customers";
 import Analytics from "./pages/Analytics";
 import Settings from "./pages/Settings";
 
+// I have two types of main routes: protected and public
+
 // Protected Route Component
 const ProtectedRoute = ({ children }) => {
   const { isAuthenticated } = useAuth();
+  console.log(isAuthenticated);
 
   if (!isAuthenticated) {
     return <Navigate to="/login" replace />;

@@ -1,24 +1,48 @@
 import { useNavigate } from "react-router-dom";
-import { format } from "date-fns";
+import Table from "../Tables/Table";
+import useOrders from "../../hooks/useOrders";
+import { formatCurrency, formatDate } from "../../utils/formatters";
 import Badge from "../common/Badge";
-import { formatCurrency } from "../../utils/formatters";
+import { useCallback, useMemo } from "react";
 
 /**
  * Recent Orders Component
  */
 const RecentOrders = ({ orders = [] }) => {
   const navigate = useNavigate();
+  const { columns, getStatusVariant } = useOrders();
 
-  const getStatusVariant = (status) => {
-    const variants = {
-      delivered: "success",
-      processing: "warning",
-      shipped: "info",
-      pending: "default",
-      cancelled: "danger"
-    };
-    return variants[status] || "default";
-  };
+  // Memoize columns
+  const memoizedColumns = useMemo(() => columns, [columns]);
+
+  // Memoize renderRow function
+  const renderRow = useCallback(
+    (row, col) => {
+      switch (col.accessor) {
+        case "date":
+          return (
+            <span className="text-sm text-gray-500">
+              {formatDate(new Date(row.date), "MMM dd, yyyy")}
+            </span>
+          );
+        case "total":
+          return (
+            <span className="text-sm font-medium text-gray-900">
+              {formatCurrency(row.total)}
+            </span>
+          );
+        case "status":
+          return (
+            <Badge variant={getStatusVariant(row.status)}>{row.status}</Badge>
+          );
+        default:
+          return (
+            <span className="text-sm text-gray-900">{row[col.accessor]}</span>
+          );
+      }
+    },
+    [getStatusVariant]
+  );
 
   return (
     <div className="bg-white rounded-lg shadow-card">
@@ -26,66 +50,14 @@ const RecentOrders = ({ orders = [] }) => {
         <h3 className="text-lg font-semibold text-gray-900">Recent Orders</h3>
         <button
           onClick={() => navigate("/orders")}
-          className="text-sm text-primary-600 hover:text-primary-700 font-medium"
+          className="cursor-pointer text-sm text-primary-600 hover:text-primary-700 font-medium"
         >
           View All
         </button>
       </div>
 
-      <div className="overflow-x-auto">
-        <table className="w-full">
-          <thead className="bg-gray-50 border-b border-gray-200">
-            <tr>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Order
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Customer
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Date
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Total
-              </th>
-              <th className="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">
-                Status
-              </th>
-            </tr>
-          </thead>
-          <tbody className="divide-y divide-gray-200">
-            {orders.map((order) => (
-              <tr key={order.id} className="hover:bg-gray-50">
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-medium text-gray-900">
-                    {order.orderNumber}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-900">
-                    {order.customer}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm text-gray-500">
-                    {format(new Date(order.date), "MMM dd, yyyy")}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <span className="text-sm font-medium text-gray-900">
-                    {formatCurrency(order.total)}
-                  </span>
-                </td>
-                <td className="px-6 py-4 whitespace-nowrap">
-                  <Badge variant={getStatusVariant(order.status)}>
-                    {order.status}
-                  </Badge>
-                </td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
-      </div>
+      {/* Use memoized columns and renderRow */}
+      <Table columns={memoizedColumns} renderRow={renderRow} data={orders} />
     </div>
   );
 };

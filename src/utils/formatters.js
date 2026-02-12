@@ -82,3 +82,22 @@ export const truncate = (text, maxLength = 50) => {
   if (!text || text.length <= maxLength) return text;
   return text.substring(0, maxLength) + "...";
 };
+
+export function formatTitle(title, wordSeparator = " ") {
+  if (!(typeof title).match("string")) {
+    throw new Error("Formatted Title data type must be string");
+  }
+
+  /* ******** */
+
+  const updatedTitle = title
+    .toLowerCase()
+    .split(wordSeparator)
+    .map((word) => `${word[0].toUpperCase() + word.substring(1)}`)
+    .join(wordSeparator);
+
+  console.log(updatedTitle);
+
+  return updatedTitle;
+}
+console.log(formatTitle("asd"));

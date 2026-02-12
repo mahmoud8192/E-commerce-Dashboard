@@ -1,31 +1,56 @@
-export const mockDashboardStats = {
-  totalRevenue: {
+export const mockDashboardStats = [
+  {
+    title: "total revinue",
     value: 54239.5,
     change: 12.5,
-    trend: "up"
+    trend: "up",
+    type: "cur",
+    color: "primary"
   },
-  totalOrders: {
+  {
+    title: "total orders",
     value: 1547,
     change: 8.2,
-    trend: "up"
+    trend: "up",
+    type: "num",
+    color: "success"
   },
-  totalCustomers: {
+  {
+    title: "total customers",
     value: 892,
     change: -3.1,
-    trend: "down"
+    trend: "down",
+    type: "num",
+    color: "warning"
   },
-  conversionRate: {
+  {
+    title: "conversion rate",
     value: 3.24,
     change: 5.7,
-    trend: "up"
+    trend: "up",
+    type: "num",
+    color: "danger"
   }
-};
+];
 
-export const mockRecentOrders = [
-  {
+export const mockRecentOrders = Array.from({ length: 10000 }, (_, i) => {
+  return {
+    id: i,
+    orderNumber: "ORD-2026-001",
+    customer: "Ahmad Samer",
+    date: "2026-02-02",
+    total: 249.99,
+    status: "delivered",
+    items: 3
+  };
+});
+
+/**
+ * 
+ *   {
     id: "ord_001",
     orderNumber: "ORD-2026-001",
-    customer: "John Smith",
+    customer: "Ahmad Samer",
     date: "2026-02-02",
     total: 249.99,
     status: "delivered",
@@ -34,7 +59,7 @@ export const mockRecentOrders = [
   {
     id: "ord_002",
     orderNumber: "ORD-2026-002",
-    customer: "Sarah Johnson",
+    customer: "Diaa nader",
     date: "2026-02-02",
     total: 189.5,
     status: "processing",
@@ -43,7 +68,7 @@ export const mockRecentOrders = [
   {
     id: "ord_003",
     orderNumber: "ORD-2026-003",
-    customer: "Michael Brown",
+    customer: "akram afif",
     date: "2026-02-01",
     total: 449.0,
     status: "shipped",
@@ -52,7 +77,7 @@ export const mockRecentOrders = [
   {
     id: "ord_004",
     orderNumber: "ORD-2026-004",
-    customer: "Emily Davis",
+    customer: "mousa altamari",
     date: "2026-02-01",
     total: 129.99,
     status: "pending",
@@ -61,14 +86,15 @@ export const mockRecentOrders = [
   {
     id: "ord_005",
     orderNumber: "ORD-2026-005",
-    customer: "David Wilson",
+    customer: "Kylian Mpape",
     date: "2026-01-31",
     total: 379.5,
     status: "delivered",
     items: 4
   }
-];
 
+ * 
+ */
 export const mockTopProducts = [
   {
     id: "prod_1",

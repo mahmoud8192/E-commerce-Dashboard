@@ -16,7 +16,7 @@ const Login = () => {
 
   const [formData, setFormData] = useState({
     email: "",
-    password: "",
+    password: ""
   });
 
   const [errors, setErrors] = useState({});
@@ -102,8 +102,8 @@ const Login = () => {
             <p className="text-sm text-blue-800 font-medium mb-1">
               Demo Credentials:
             </p>
-            <p className="text-xs text-blue-700">Email: admin@example.com</p>
-            <p className="text-xs text-blue-700">Password: admin123</p>
+            <p className="text-xs text-blue-700">Email: admin@test.com</p>
+            <p className="text-xs text-blue-700">Password: admin@111</p>
           </div>
 
           <form onSubmit={handleSubmit} className="space-y-6">

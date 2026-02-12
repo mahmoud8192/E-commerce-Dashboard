@@ -22,7 +22,7 @@ import { Plus, Edit, Trash2, Package } from "lucide-react";
 const Products = () => {
   const {
     products,
-    productsLoading,
+    loading,
     fetchProducts,
     createProduct,
     updateProduct,
@@ -194,7 +194,7 @@ const Products = () => {
     }
   };
 
-  if (productsLoading) {
+  if (loading) {
     return (
       <div className="flex items-center justify-center h-96">
         <Spinner size="lg" />
