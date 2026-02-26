@@ -1,9 +1,9 @@
 # E-Commerce Dashboard
 
-[![Live Demo](https://img.shields.io/badge/Live_Demo-Click_here-brightgreen)](https://e-commerce-admin-dashbaord.netlify.app/login)
+[Live Demo]
 
 **Interactive e-commerce dashboard** for monitoring sales, inventory, customers, and analytics.  
-**Deployed**: https://e-commerce-dashboard78874.netlify.app/
+**Deployed**: [https://e-commerce-admin-dashbaord.netlify.app/login]
 
 ## 📊 Project Overview
 
