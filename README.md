@@ -3,7 +3,7 @@
 [Live Demo]
 
 **Interactive e-commerce dashboard** for monitoring sales, inventory, customers, and analytics.  
-**Deployed**: [https://e-commerce-admin-dashbaord.netlify.app/login]
+**Deployed**: [https://e-commerce-admin-dashbaord.netlify.app]
 
 ## 📊 Project Overview
 
